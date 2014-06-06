@@ -20,7 +20,7 @@ const (
 	HostMapWsFile    = "/var/lib/haproxy/conf/host_be_ws.map"
 )
 
-func writeServer(f *os.File, id string, s *router.Server) {
+func writeServer(f *os.File, id string, s *router.Endpoint) {
 	f.WriteString(fmt.Sprintf("  server %s %s:%s check inter 5000ms\n", id, s.IP, s.Port))
 }
 
@@ -50,7 +50,7 @@ func main() {
 		}
 
 		f.WriteString(fmt.Sprintf("backend be_%s\n  mode http\n  balance leastconn\n  timeout check 5000ms\n", frontendname))
-		for seid, se := range frontend.ServerTable {
+		for seid, se := range frontend.EndpointTable {
 			writeServer(f, seid, &se)
 		}
 		f.WriteString("\n")

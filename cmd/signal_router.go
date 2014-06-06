@@ -22,7 +22,7 @@ func execCmd(cmd *exec.Cmd) (string, bool) {
 }
 
 func ReloadHaproxy() {
-	cmd := exec.Command("/var/lib/haproxy/bin/write_haproxy_config")
+	cmd := exec.Command("/usr/bin/geard-router-haproxy-writeconfig")
 	out,status := execCmd(cmd)
 	if !status {
 		fmt.Println("Failed to correctly create haproxy config.")
