@@ -1,0 +1,9 @@
+#!/bin/bash
+
+dir=`dirname $0`
+mkdir -p /var/lib/haproxy/{bin,conf,run,log}
+go build -o /var/lib/haproxy/bin/signal_router $dir/cmd/signal_router.go
+go build -o /var/lib/haproxy/bin/write_haproxy_config $dir/cmd/write_haproxy_config.go
+cp -f $dir/haproxy_template.conf /var/lib/haproxy/conf/
+cp -f $dir/default_pub_keys.pem /var/lib/haproxy/conf/
+touch /var/lib/haproxy/conf/{host_be.map,host_be_ws.map,host_be_ressl.map,host_be_sni.map}
