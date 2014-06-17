@@ -9,7 +9,6 @@ yum -y install gcc make openssl-devel pcre-devel socat golang git && \
 cd haproxy-ss-* && make TARGET=linux2628 CPU=native USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1 && make install && \
 cd .. && rm -rf haproxy-ss-* && \
 export GOPATH=/root/ && \
-(go get github.com/openshift/geard || true) && \
 (go get github.com/openshift/geard-router-haproxy || true) && \
 cd $GOPATH/src/github.com/openshift/geard-router-haproxy && ./build && \
 mkdir -p /usr/bin && \
