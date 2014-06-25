@@ -14,7 +14,7 @@ cd $GOPATH/src/github.com/openshift/geard-router-haproxy && ./build && \
 mkdir -p /usr/bin && \
 mkdir -p /var/lib/haproxy/{conf,run,bin,log} && \
 cp -f geard-router-haproxy-writeconfig geard-router-haproxy-sighandler /usr/bin/ && \
-cp -f haproxy_template.conf default_pub_keys.pem /var/lib/haproxy/bin/ && \
+cp -f haproxy_template.conf default_pub_keys.pem /var/lib/haproxy/conf/ && \
 yum -y remove gcc golang git && \
 touch /var/lib/haproxy/conf/{host_be.map,host_be_ws.map,host_be_ressl.map,host_be_sni.map,haproxy.config}
 VOLUME /var/lib/containers
