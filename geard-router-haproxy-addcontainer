@@ -1,0 +1,54 @@
+#!/usr/bin/python
+
+import sys, getopt
+import commands
+import json
+
+def usage():
+   print '-f <frontend_name> -c <container_name> [ -q ] [ -i <ip_address of node> ]'
+
+def get_port(container):
+   cmd = "docker inspect %s" % container
+   s,out = commands.getstatusoutput(cmd)
+   struct = json.loads(out)
+   host_struct = struct[0]['HostConfig']['PortBindings']
+   for key in host_struct:
+       return host_struct[key][0]['HostPort']
+
+def main(argv):
+   cmd = 'ip -o -d -f inet addr | grep eth0 | xargs | cut -d " " -f4 | cut -d "/" -f1'
+   s, host_ip = commands.getstatusoutput(cmd)
+   frontend = ''
+   container = ''
+   noisy = 1
+   try:
+      opts, args = getopt.getopt(argv,"hqf:c:",["frontend=","container="])
+   except getopt.GetoptError:
+      usage()
+      sys.exit(2)
+   for opt, arg in opts:
+      if opt == '-h':
+         usage()
+         sys.exit()
+      elif opt in ("-f", "--frontend"):
+         frontend = arg
+      elif opt in ("-c", "--container"):
+         container = arg
+      elif opt in ("-q", "--quiet"):
+         noisy = 0
+   if container=='' or frontend=='':
+     usage()
+     sys.exit(2)
+   port = get_port(container)
+   cmd = "router add-route \'{\"Frontend\":\"%s\", \"Endpoints\":[{\"IP\":\"%s\", \"Port\":\"%s\"}]}\'" % (frontend, host_ip, port)
+   if noisy:
+     print 'Frontend  : ', frontend
+     print 'Container : ', container
+     print "Found port : ", port
+     print "Run command : ", cmd
+   else :
+     print cmd
+   # commands.getstatusoutput(cmd)
+
+if __name__ == "__main__":
+   main(sys.argv[1:])

@@ -11,3 +11,17 @@ Change something?
 	As an example, replace the default_pub_keys.pem, or modify haproxy_template.conf and create a new image.
 
 
+Autoscaler
+==========
+
+On checked out branch in $GOPATH (go get github.com/openshift/geard-router-haproxy)
+cd $GOPATH/src/github.com/openshift/geard-router-haproxy
+go build -o geard-sample-broker cmd/sample_broker.go
+cp -f ./geard-router-haproxy-addcontainer /usr/bin
+
+One one terminal,
+./sample_broker 
+
+On another terminal,
+./autoscaler.rb 
+
