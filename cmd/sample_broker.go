@@ -7,6 +7,8 @@ import (
 	"net"
 	"strings"
 	"strconv"
+	"time"
+	"os"
 )
 
 type Gear struct {
@@ -105,18 +107,25 @@ func launchGear(appname string) {
 
 func add_gear_to_router(appname string, gearname string) {
 	count := 1
+	fmt.Printf("geard-router-addcontainer -q -f %s -c %s\n", appname, gearname)
 	out, err := exec.Command("geard-router-addcontainer", "-q", "-f", appname, "-c", gearname).CombinedOutput()
 	for (count<5 && err!=nil) {
 		count = count +1
-		fmt.Println("Error getting routing information from new gear - %s.", err.Error())
+		fmt.Printf("Error getting routing information from new gear - ")
+		fmt.Println(err.Error())
+		fmt.Println(string(out))
 		fmt.Println("Retrying.")
+		time.Sleep(10)
 		out, err = exec.Command("geard-router-addcontainer", "-q", "-f", appname, "-c", gearname).CombinedOutput()
 	}
 	if err!=nil {
+		fmt.Println("Errored again. Giving up.")
 		return
 	}
 	args := strings.SplitN(string(out)," ", 3)
-	_, rerr := exec.Command("gear", args[0], args[1], args[2]).CombinedOutput()
+	fmt.Printf("gear %s %s %s\n", args[0], args[1], strings.Trim(args[2], "' "))
+	rout, rerr := exec.Command("gear", args[0], args[1], strings.Trim(args[2], "' \n")).CombinedOutput()
+	fmt.Printf("Router output : %s\n", string(rout))
 	if rerr!=nil {
 		fmt.Println("Error while adding gear to router - %s", rerr.Error())
 		return
@@ -128,7 +137,12 @@ func findAvailableNode() string {
 }
 
 func main() {
-	l, err := net.Listen("unix", "/var/lib/containers/router/broker.sock")
+	filename := "/var/lib/containers/router/broker.sock"
+	err := os.Remove(filename)
+	if err != nil {
+		// ignore
+	}
+	l, err := net.Listen("unix", filename)
 	if err != nil {
 		println("listen error", err.Error())
 		return
