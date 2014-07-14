@@ -73,7 +73,7 @@ func minister(c net.Conn) {
 			appname := strings.Trim(args[1], "\n ")
 			app := GlobalAppMap[appname]
 			if len(app.Gears) > 0 {
-				fmt.Printf("Cannot delete application because it still has %s gears in it.\n", len(app.Gears))
+				fmt.Printf("Cannot delete application because it still has %d gears in it.\n", len(app.Gears))
 			} else {
 				delete(GlobalAppMap, appname)
 				WriteAppStructure()
@@ -187,7 +187,7 @@ func add_gear_to_router(appname string, gearname string) {
 		fmt.Println(err.Error())
 		//fmt.Println(string(out))
 		fmt.Println("Retrying.")
-		time.Sleep(10)
+		time.Sleep(10*time.Second)
 		out, err = exec.Command("geard-router-addcontainer", "-q", "-f", appname, "-c", gearname).CombinedOutput()
 	}
 	if err != nil {
